@@ -21,7 +21,7 @@ public class Announcement {
 
     private String testingDate;
 
-    private String testngAddress;
+    private String testingAddress;
 
     private String applyDate;
 

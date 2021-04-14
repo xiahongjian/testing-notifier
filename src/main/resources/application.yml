@@ -25,5 +25,7 @@ spring:
       settings:
         trace: false
         web-allow-others: false
-spider:
-  cron: "0 0 12/18 * * *"
+notify:
+  cron: "0 0 9-18/1 * * *"
+  interval: 1 # 每次请求间隔时间
+  tos: hongjian.xia@qq.com

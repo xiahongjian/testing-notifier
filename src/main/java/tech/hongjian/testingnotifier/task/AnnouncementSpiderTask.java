@@ -28,7 +28,7 @@ public class AnnouncementSpiderTask {
     @Setter(onMethod_ = {@Autowired})
     private NotificationService notificationService;
 
-    @Scheduled(cron = "${spider.cron:0 0 12,18 * * *}")
+    @Scheduled(cron = "${notify.cron:0 0 12,18 * * *}")
     public void doParse() {
         log.info("开始爬取通知...");
 
