@@ -1,7 +1,10 @@
-package tech.hongjian.testingnotifier.task;
+package tech.hongjian.testingnotifier.job;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,7 +21,7 @@ import java.util.List;
 @Transactional
 @Slf4j
 @Component
-public class AnnouncementSpiderTask {
+public class AnnouncementSpiderJob implements Job {
     @Setter(onMethod_ = {@Autowired})
     private EntityManager em;
 
@@ -28,7 +31,6 @@ public class AnnouncementSpiderTask {
     @Setter(onMethod_ = {@Autowired})
     private NotificationService notificationService;
 
-    @Scheduled(cron = "${notify.cron:0 0 12,18 * * *}")
     public void doParse() {
         log.info("开始爬取通知...");
 
@@ -42,5 +44,10 @@ public class AnnouncementSpiderTask {
         // 发送通知
         notificationService.sendNotification();
         log.info("爬取通知结束。");
+    }
+
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        doParse();
     }
 }

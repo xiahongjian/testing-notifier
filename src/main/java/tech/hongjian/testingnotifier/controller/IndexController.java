@@ -2,12 +2,11 @@ package tech.hongjian.testingnotifier.controller;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.hongjian.testingnotifier.parser.AnnouncementParser;
 import tech.hongjian.testingnotifier.service.NotificationService;
-import tech.hongjian.testingnotifier.task.AnnouncementSpiderTask;
+import tech.hongjian.testingnotifier.job.AnnouncementSpiderJob;
 
 /**
  * Created by xiahongjian on 2021/4/14.
@@ -21,7 +20,7 @@ public class IndexController {
     private NotificationService notificationService;
 
     @Setter(onMethod_ = {@Autowired})
-    private AnnouncementSpiderTask task;
+    private AnnouncementSpiderJob task;
 
 
     @GetMapping("/parse")

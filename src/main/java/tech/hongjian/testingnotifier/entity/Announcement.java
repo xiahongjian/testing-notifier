@@ -1,24 +1,17 @@
 package tech.hongjian.testingnotifier.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import javax.persistence.Entity;
 
 /**
  * Created by xiahongjian on 2021/4/14.
  */
 @Entity
 @Data
-public class Announcement {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt = LocalDateTime.now();
-
+@EqualsAndHashCode(callSuper = true)
+public class Announcement extends BaseEntity {
     private String testingDate;
 
     private String testingAddress;
@@ -32,9 +25,6 @@ public class Announcement {
     private String announcementUrl;
 
     private String announcementTitle;
-
-//    @Column(length = 4000)
-//    private String announcementContent;
 
     private Boolean hasNotified = Boolean.FALSE;
 }
