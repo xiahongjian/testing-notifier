@@ -24,16 +24,13 @@ public class AnnouncementParser extends BaseParser{
     @Setter(onMethod_ = {@Autowired})
     private EntityManager em;
 
-    @Value("${notify.interval:1}")
-    private Integer interval;
-
     private static final Pattern TESTING_DATE_PATTERN = Pattern.compile("本次测试时间(为)?：(.*?)，");
     private static final Pattern TESTING_ADDRESS = Pattern.compile("测试站地址(为)?：(.*)\\s*咨询电话");
     private static final Pattern APPLY_DATE = Pattern.compile("报名时间(为)?：(\\d{4}年\\d{1,2}月\\d{1,2}日[\\d:]+(起|开始))，");
     private static final Pattern ACCOUNT_PATTERN = Pattern.compile("共(\\d+)个名额");
 
     @Override
-    public void parse(Integer startId) {
+    public void parse(Integer startId, int interval) {
 
         try {
             Element element = queryElement(getIndexUrl(), "#catelist_1 ul");
@@ -49,7 +46,7 @@ public class AnnouncementParser extends BaseParser{
                 if (!needToParse(title)) {
                     continue;
                 }
-                parseAnnouncement(link, announcementId, title);
+                parseAnnouncement(link, announcementId, title, interval);
             }
 
         } catch (IOException e) {
@@ -58,10 +55,10 @@ public class AnnouncementParser extends BaseParser{
 
     }
 
-    private void parseAnnouncement(String href, Integer id, String title) throws IOException {
+    private void parseAnnouncement(String href, Integer id, String title, int delay) throws IOException {
         try {
             // 停3秒，控制访问频率
-            Thread.sleep(interval * 1000);
+            Thread.sleep(delay * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

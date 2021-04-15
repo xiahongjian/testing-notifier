@@ -3,6 +3,7 @@ package tech.hongjian.testingnotifier.job;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,9 @@ public class AnnouncementSpiderJob implements Job {
     @Setter(onMethod_ = {@Autowired})
     private NotificationService notificationService;
 
-    public void doParse() {
+    public static final String VAR_INTERVAL = "interval";
+
+    public void doParse(int interval) {
         log.info("开始爬取通知...");
 
         // 获取最新的报名公告ID
@@ -39,7 +42,7 @@ public class AnnouncementSpiderJob implements Job {
                 .setMaxResults(1)
                 .getResultList();
         // 爬取报名公告
-        parser.parse(list.isEmpty() ? null : list.get(0));
+        parser.parse(list.isEmpty() ? null : list.get(0), interval);
 
         // 发送通知
         notificationService.sendNotification();
@@ -48,6 +51,11 @@ public class AnnouncementSpiderJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        doParse();
+        int interval = 5;
+        JobDataMap mergedJobDataMap = jobExecutionContext.getMergedJobDataMap();
+        if (mergedJobDataMap.containsKey(VAR_INTERVAL)) {
+            interval = mergedJobDataMap.getInt(VAR_INTERVAL);
+        }
+        doParse(interval);
     }
 }
