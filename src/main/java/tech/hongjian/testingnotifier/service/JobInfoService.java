@@ -47,7 +47,7 @@ public class JobInfoService {
         JobInfo job = jobInfoRepository.saveAndFlush(jobInfo);
 
         if (job.getEnable()) {
-            // 启动job
+           startJob(job);
         }
         return job;
     }
@@ -116,7 +116,7 @@ public class JobInfoService {
         }
     }
 
-    public Date rescheduleJob(Integer jobId) {
+    public Date rescheduleJob(Integer jobId, String cron) {
         JobInfo byId = findById(jobId);
         if (byId == null) {
             return null;
@@ -124,7 +124,7 @@ public class JobInfoService {
         TriggerKey triggerKey = TriggerKey.triggerKey(byId.getName());
         try {
             if (scheduler.checkExists(triggerKey)) {
-                CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(byId.getCron());
+                CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cron);
                 Trigger trigger = TriggerBuilder.newTrigger().withSchedule(cronScheduleBuilder).withIdentity(triggerKey).build();
                 return scheduler.rescheduleJob(triggerKey, trigger);
             }

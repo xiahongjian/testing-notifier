@@ -2,11 +2,13 @@ package tech.hongjian.testingnotifier.controller;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tech.hongjian.testingnotifier.entity.JobInfo;
 import tech.hongjian.testingnotifier.parser.AnnouncementParser;
+import tech.hongjian.testingnotifier.service.JobInfoService;
 import tech.hongjian.testingnotifier.service.NotificationService;
 import tech.hongjian.testingnotifier.job.AnnouncementSpiderJob;
+import tech.hongjian.testingnotifier.util.R;
 
 /**
  * Created by xiahongjian on 2021/4/14.
@@ -14,31 +16,36 @@ import tech.hongjian.testingnotifier.job.AnnouncementSpiderJob;
 @RestController
 public class IndexController {
     @Setter(onMethod_ = {@Autowired})
-    private AnnouncementParser parser;
+    private JobInfoService jobInfoService;
 
-    @Setter(onMethod_ = {@Autowired})
-    private NotificationService notificationService;
-
-    @Setter(onMethod_ = {@Autowired})
-    private AnnouncementSpiderJob task;
-
-
-    @GetMapping("/parse")
-
-    public String parse() {
-        parser.parse(null);
-        return "done";
+    @PostMapping("/jobs")
+    public R createJob(@RequestBody JobInfo jobInfo) {
+        jobInfoService.createJob(jobInfo);
+        return R.ok();
     }
 
-    @GetMapping("/notify")
-    public String sendNotification() {
-        notificationService.sendNotification();
-        return "done";
+    @PutMapping("/jobs/{id}/pause")
+    public R pauseJob(@PathVariable Integer id) {
+        jobInfoService.pauseJob(id);
+        return R.ok();
     }
 
-    @GetMapping("/task")
-    public String doTask() {
-        task.doParse();
-        return "done";
+    @PutMapping("/jobs/{id}/resume")
+    public R resumeJob(@PathVariable Integer id) {
+        jobInfoService.resumeJob(id);
+        return R.ok();
     }
+
+    @PutMapping("/jobs/{id}/reschedule")
+    public R rescheduleJob(@PathVariable Integer id, @RequestParam String cron) {
+        jobInfoService.rescheduleJob(id, cron);
+        return R.ok();
+    }
+
+    @PutMapping("/jobs/{id}/delete")
+    public R deleteJob(@PathVariable Integer id) {
+        jobInfoService.deleteJob(id);
+        return R.ok();
+    }
+
 }

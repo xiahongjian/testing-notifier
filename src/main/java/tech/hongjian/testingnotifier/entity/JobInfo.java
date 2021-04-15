@@ -17,5 +17,5 @@ public class JobInfo extends BaseEntity {
     private String cron;
     private String remark;
     private String params;
-    private Boolean enable;
+    private Boolean enable = Boolean.FALSE;
 }
