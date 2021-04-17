@@ -34,4 +34,5 @@ build/
 /.mvn/
 /mvnw
 /mvnw.cmd
-/src/main/resources/application-prod.yml
+#/src/main/resources/application-prod.yml
+*.bak

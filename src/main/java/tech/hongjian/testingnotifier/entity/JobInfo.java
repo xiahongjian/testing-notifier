@@ -13,8 +13,16 @@ import javax.persistence.Entity;
 @EqualsAndHashCode(callSuper = true)
 public class JobInfo extends BaseEntity {
     private String name;
+    private String group;
     private String className;
+    /**
+     * 自定义cron表达式
+     */
     private String cron;
+    /**
+     * 使用预设Trigger
+     */
+    private String triggerType;
     private String remark;
     private String params;
     private Boolean enable = Boolean.FALSE;
