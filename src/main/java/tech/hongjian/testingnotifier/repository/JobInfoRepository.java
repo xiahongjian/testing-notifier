@@ -13,5 +13,7 @@ import java.util.List;
 public interface JobInfoRepository extends JpaRepository<JobInfo, Integer> {
     List<JobInfo> findAllByEnableOrderById(boolean enable);
 
-    long countByName(String name);
+    JobInfo findFirstByName(String name);
+
+    boolean existsByName(String name);
 }

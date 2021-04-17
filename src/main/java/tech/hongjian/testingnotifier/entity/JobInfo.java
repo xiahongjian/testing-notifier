@@ -13,7 +13,7 @@ import javax.persistence.Entity;
 @EqualsAndHashCode(callSuper = true)
 public class JobInfo extends BaseEntity {
     private String name;
-    private String group;
+    private String groupName;
     private String className;
     /**
      * 自定义cron表达式

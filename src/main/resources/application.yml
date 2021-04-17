@@ -4,28 +4,16 @@ spring:
   profiles:
     active: dev
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:./repo;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    platform: h2
-    username: sa
-    password: sa
+    url: jdbc:mysql://pi.home:3306/oa?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.MariaDBDialect
     properties:
       hibernate:
         show_sql: false
         use_sql_comments: false
         format_sql: true
-  h2:
-    console:
-      enabled: true
-      path: /console
-      settings:
-        trace: false
-        web-allow-others: false
-notify:
-  cron: "0 0 9-18/1 * * *"
-  interval: 1 # 每次请求间隔时间
-  tos: hongjian.xia@qq.com

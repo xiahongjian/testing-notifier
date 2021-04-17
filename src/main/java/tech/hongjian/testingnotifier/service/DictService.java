@@ -1,6 +1,7 @@
 package tech.hongjian.testingnotifier.service;
 
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,10 @@ public class DictService {
 
     public Dict getDictByKey(String key) {
         return Optional.ofNullable(key).map(dictRepository::findFirstByKey).orElse(null);
+    }
+
+    public DictValue getDictValueByKey(String key) {
+        return StringUtils.isBlank(key) ? null : dictValueRepository.findFirstByKey(key);
     }
 
     public List<Dict> listDict() {

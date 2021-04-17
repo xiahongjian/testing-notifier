@@ -9,10 +9,10 @@ import tech.hongjian.testingnotifier.entity.JobInfo;
  */
 public class ScheduleUtil {
     public static JobKey jobKey(JobInfo jobInfo) {
-        return JobKey.jobKey(jobInfo.getName(), jobInfo.getGroup());
+        return JobKey.jobKey(jobInfo.getName(), jobInfo.getGroupName());
     }
 
-    private static TriggerKey triggerKey(JobInfo jobInfo) {
-        return TriggerKey.triggerKey(jobInfo.getName(), jobInfo.getGroup());
+    public static TriggerKey triggerKey(JobInfo jobInfo) {
+        return TriggerKey.triggerKey(jobInfo.getName(), jobInfo.getGroupName());
     }
 }

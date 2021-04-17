@@ -15,37 +15,6 @@ import tech.hongjian.testingnotifier.util.R;
  */
 @RestController
 public class IndexController {
-    @Setter(onMethod_ = {@Autowired})
-    private JobInfoService jobInfoService;
 
-    @PostMapping("/jobs")
-    public R createJob(@RequestBody JobInfo jobInfo) {
-        jobInfoService.createJob(jobInfo);
-        return R.ok();
-    }
-
-    @PutMapping("/jobs/{id}/pause")
-    public R pauseJob(@PathVariable Integer id) {
-        jobInfoService.pauseJob(id);
-        return R.ok();
-    }
-
-    @PutMapping("/jobs/{id}/resume")
-    public R resumeJob(@PathVariable Integer id) {
-        jobInfoService.resumeJob(id);
-        return R.ok();
-    }
-
-    @PutMapping("/jobs/{id}/reschedule")
-    public R rescheduleJob(@PathVariable Integer id, @RequestParam String cron) {
-        jobInfoService.rescheduleJob(id, cron);
-        return R.ok();
-    }
-
-    @PutMapping("/jobs/{id}/delete")
-    public R deleteJob(@PathVariable Integer id) {
-        jobInfoService.deleteJob(id);
-        return R.ok();
-    }
 
 }

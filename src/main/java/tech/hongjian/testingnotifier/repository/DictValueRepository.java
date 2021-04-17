@@ -20,4 +20,6 @@ public interface DictValueRepository extends JpaRepository<DictValue, Integer> {
     void deleteAllByDictId(Integer dictId);
 
     boolean existsByDictIdAndValue(Integer dictId, String value);
+
+    DictValue findFirstByKey(String key);
 }
