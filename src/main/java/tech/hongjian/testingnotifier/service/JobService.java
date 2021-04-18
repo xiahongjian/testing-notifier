@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class JobInfoService {
+public class JobService {
     @Setter(onMethod_ = {@Autowired})
     private JobInfoRepository jobInfoRepository;
 
@@ -42,6 +42,14 @@ public class JobInfoService {
 
     public JobInfo findById(Integer id) {
         return jobInfoRepository.findById(id).orElse(null);
+    }
+
+    public JobInfo exists(Integer id) {
+        JobInfo byId = findById(id);
+        if (byId == null) {
+            throw new ServiceException("ID为" + id + "的任务为找到。");
+        }
+        return byId;
     }
 
     public JobInfo createJob(JobInfo jobInfo) {
@@ -106,12 +114,33 @@ public class JobInfoService {
         }
     }
 
+    public void doJobRightNowOnce(JobInfo jobInfo) {
+        try {
+            Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(jobInfo.getClassName());
+
+            JobDataMap jobDataMap = toJsonDataMap(jobInfo.getParams());
+            JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(ScheduleUtil.jobKey(jobInfo))
+                    .setJobData(jobDataMap)
+                    .build();
+            Trigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(ScheduleUtil.onceTriggerKey(jobInfo))
+                    .startAt(new Date())
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(3).withRepeatCount(0)) // 3秒后执行，不重复
+                    .build();
+            scheduler.scheduleJob(jobDetail, trigger);
+        } catch (ClassNotFoundException | SchedulerException e) {
+            log.warn("创建调度失败，信息：{}", e.getMessage(), e);
+        }
+    }
+
+    public void doJobRightNowOnce(Integer jobId) {
+        JobInfo jobInfo = exists(jobId);
+        doJobRightNowOnce(jobInfo);
+    }
+
 
     public void pauseJob(Integer jobId) {
-        JobInfo byId = findById(jobId);
-        if (byId == null) {
-            return;
-        }
+        JobInfo byId = exists(jobId);
         try {
             JobKey jobKey = ScheduleUtil.jobKey(byId);
             if (scheduler.checkExists(jobKey)) {
@@ -123,10 +152,7 @@ public class JobInfoService {
     }
 
     public void resumeJob(Integer jobId) {
-        JobInfo byId = findById(jobId);
-        if (byId == null) {
-            return;
-        }
+        JobInfo byId = exists(jobId);
         JobKey jobKey = ScheduleUtil.jobKey(byId);
         try {
             if (scheduler.checkExists(jobKey)) {
@@ -138,10 +164,7 @@ public class JobInfoService {
     }
 
     public Date rescheduleJob(Integer jobId, String cron) {
-        JobInfo byId = findById(jobId);
-        if (byId == null) {
-            return null;
-        }
+        JobInfo byId = exists(jobId);
         TriggerKey triggerKey = ScheduleUtil.triggerKey(byId);
         try {
             if (scheduler.checkExists(triggerKey)) {
@@ -159,10 +182,7 @@ public class JobInfoService {
     }
 
     public void deleteJob(Integer jobId) {
-        JobInfo byId = findById(jobId);
-        if (byId == null) {
-            return;
-        }
+        JobInfo byId = exists(jobId);
         JobKey jobKey = ScheduleUtil.jobKey(byId);
         try {
             if (scheduler.checkExists(jobKey)) {

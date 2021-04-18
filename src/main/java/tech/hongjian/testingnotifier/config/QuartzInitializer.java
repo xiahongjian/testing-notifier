@@ -4,7 +4,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import tech.hongjian.testingnotifier.entity.JobInfo;
-import tech.hongjian.testingnotifier.service.JobInfoService;
+import tech.hongjian.testingnotifier.service.JobService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -15,13 +15,13 @@ import java.util.List;
 @Configuration
 public class QuartzInitializer {
     @Setter(onMethod_ = {@Autowired})
-    private JobInfoService jobInfoService;
+    private JobService jobService;
 
     @PostConstruct
     public void init() {
-        List<JobInfo> jobInfos = jobInfoService.listAllEnable();
+        List<JobInfo> jobInfos = jobService.listAllEnable();
         for (JobInfo jobInfo : jobInfos) {
-            jobInfoService.startJob(jobInfo);
+            jobService.startJob(jobInfo);
         }
     }
 

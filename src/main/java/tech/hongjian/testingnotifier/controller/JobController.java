@@ -4,7 +4,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tech.hongjian.testingnotifier.entity.JobInfo;
-import tech.hongjian.testingnotifier.service.JobInfoService;
+import tech.hongjian.testingnotifier.service.JobService;
 import tech.hongjian.testingnotifier.util.R;
 
 /**
@@ -14,40 +14,40 @@ import tech.hongjian.testingnotifier.util.R;
 @RequestMapping("/jobs")
 public class JobController {
     @Setter(onMethod_ = {@Autowired})
-    private JobInfoService jobInfoService;
+    private JobService jobService;
 
     @GetMapping("")
     public R listJob() {
-        return R.ok(jobInfoService.listScheduledJob());
+        return R.ok(jobService.listScheduledJob());
     }
 
     @PostMapping("")
     public R createJob(@RequestBody JobInfo jobInfo) {
-        jobInfoService.createJob(jobInfo);
+        jobService.createJob(jobInfo);
         return R.ok();
     }
 
     @PutMapping("/{id}/pause")
     public R pauseJob(@PathVariable Integer id) {
-        jobInfoService.pauseJob(id);
+        jobService.pauseJob(id);
         return R.ok();
     }
 
     @PutMapping("/{id}/resume")
     public R resumeJob(@PathVariable Integer id) {
-        jobInfoService.resumeJob(id);
+        jobService.resumeJob(id);
         return R.ok();
     }
 
     @PutMapping("/{id}/reschedule")
     public R rescheduleJob(@PathVariable Integer id, @RequestParam String cron) {
-        jobInfoService.rescheduleJob(id, cron);
+        jobService.rescheduleJob(id, cron);
         return R.ok();
     }
 
     @PutMapping("/{id}/delete")
     public R deleteJob(@PathVariable Integer id) {
-        jobInfoService.deleteJob(id);
+        jobService.deleteJob(id);
         return R.ok();
     }
 }
