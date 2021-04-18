@@ -4,3 +4,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
+  mail:
+    host: smtp.qq.com # 填上自己的邮件服务地址
+    username: xxxx@qq.com # 邮箱账号
+    password: xxxxx # 邮箱密码
