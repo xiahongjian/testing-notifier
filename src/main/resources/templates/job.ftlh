@@ -61,6 +61,9 @@
                         return value ? value : 'DEFAULT';
                     }
                 }, {
+                    title: '类名',
+                    field: 'className'
+                }, {
                     title: '参数',
                     field: 'params'
                 }, {
@@ -78,6 +81,9 @@
                         }
                         return '<span class="label label-warning">禁用</span>'
                     }
+                }, {
+                    title: '创建时间',
+                    field: 'createdAt'
                 }, {
                     title: '操作',
                     align: 'center',

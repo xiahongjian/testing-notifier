@@ -9,8 +9,6 @@
 
     <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.css">
-
-
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -37,12 +35,9 @@
 </div>
 <script type="text/javascript" src="static/jquery-3.6.0.js"></script>
 <script type="text/javascript" src="static/bootstrap/js/bootstrap.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
 <script src="https://unpkg.com/bootstrap-table@1.15.3/dist/bootstrap-table.min.js"></script>
-<!-- Latest compiled and minified Locales -->
 <script src="https://unpkg.com/bootstrap-table@1.15.3/dist/locale/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="static/layer/layer.js"></script>
-<script type="text/javascript" src="static/vue.min.js"></script>
 ${pageScript!}
 </body>
 </html>

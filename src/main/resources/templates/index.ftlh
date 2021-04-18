@@ -64,6 +64,9 @@
                         return value ? value : 'DEFAULT';
                     }
                 }, {
+                    title: '类名',
+                    field: 'className'
+                }, {
                     title: '参数',
                     field: 'params'
                 }, {
