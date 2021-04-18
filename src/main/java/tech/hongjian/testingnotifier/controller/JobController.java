@@ -11,19 +11,30 @@ import tech.hongjian.testingnotifier.util.R;
  * Created by xiahongjian on 2021/4/17.
  */
 @RestController
-@RequestMapping("/jobs")
+@RequestMapping("/api/jobs")
 public class JobController {
     @Setter(onMethod_ = {@Autowired})
     private JobService jobService;
 
-    @GetMapping("")
+    @GetMapping("/schedules")
     public R listJob() {
         return R.ok(jobService.listScheduledJob());
+    }
+
+    @GetMapping("/infos")
+    public R listJobInfo() {
+        return R.ok(jobService.listJobInfo());
     }
 
     @PostMapping("")
     public R createJob(@RequestBody JobInfo jobInfo) {
         jobService.createJob(jobInfo);
+        return R.ok();
+    }
+
+    @DeleteMapping("/{id}")
+    public R deleteJob(@PathVariable Integer id) {
+        jobService.deleteJob(id);
         return R.ok();
     }
 
@@ -45,9 +56,22 @@ public class JobController {
         return R.ok();
     }
 
-    @PutMapping("/{id}/delete")
-    public R deleteJob(@PathVariable Integer id) {
-        jobService.deleteJob(id);
+    @PutMapping("/{id}/enable")
+    public R enableJob(@PathVariable Integer id) {
+        jobService.enableJob(id);
         return R.ok();
     }
+
+    @PutMapping("/{id}/disable")
+    public R disableJob(@PathVariable Integer id) {
+        jobService.disableJob(id);
+        return R.ok();
+    }
+
+    @GetMapping("/{id}/do")
+    public R doJobRightNow(@PathVariable Integer id) {
+        jobService.doJobRightNowOnce(id);
+        return R.ok();
+    }
+
 }

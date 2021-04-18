@@ -8,4 +8,5 @@ public interface SysDictKeys {
      * 用于配置通知发送到的邮箱
      */
     String NOTIFY_TO = "sys_notify_to";
+    String TRIGGER_TYPE = "sys_trigger_type";
 }

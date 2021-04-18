@@ -10,9 +10,8 @@ import tech.hongjian.testingnotifier.entity.DictValue;
 import tech.hongjian.testingnotifier.repository.DictRepository;
 import tech.hongjian.testingnotifier.repository.DictValueRepository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by xiahongjian on 2021/4/17.
@@ -55,6 +54,10 @@ public class DictService {
         return Optional.ofNullable(getDictByKey(key))
                 .map(d -> listEnableValueById(d.getId()))
                 .orElse(Collections.emptyList());
+    }
+
+    public Map<String, String> getEnableValueMap(String key) {
+        return listEnableValueByKey(key).stream().collect(Collectors.toMap(DictValue::getKey, DictValue::getLabel));
     }
 
     public List<DictValue> listEnableValueById(Integer id) {

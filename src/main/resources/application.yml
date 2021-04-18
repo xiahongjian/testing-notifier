@@ -17,3 +17,12 @@ spring:
         show_sql: false
         use_sql_comments: false
         format_sql: true
+  mvc:
+    static-path-pattern: /static/**
+  freemarker:
+    expose-request-attributes: true
+    request-context-attribute: request
+logging:
+  file:
+    path: ./logs
+    name: testing-notifier.log

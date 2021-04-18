@@ -1,5 +1,6 @@
 package tech.hongjian.testingnotifier.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
@@ -88,6 +89,10 @@ public class JobService {
         return new JobDataMap();
     }
 
+    public List<JobInfo> listJobInfo() {
+        return jobInfoRepository.findAll();
+    }
+
     public void startJob(JobInfo jobInfo) {
         if (!jobInfo.getEnable()) {
             return;
@@ -119,7 +124,8 @@ public class JobService {
             Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(jobInfo.getClassName());
 
             JobDataMap jobDataMap = toJsonDataMap(jobInfo.getParams());
-            JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(ScheduleUtil.jobKey(jobInfo))
+            JobDetail jobDetail = JobBuilder.newJob(jobClass)
+                    .withIdentity(ScheduleUtil.jobKey(jobInfo))
                     .setJobData(jobDataMap)
                     .build();
             Trigger trigger = TriggerBuilder.newTrigger()
@@ -183,7 +189,11 @@ public class JobService {
 
     public void deleteJob(Integer jobId) {
         JobInfo byId = exists(jobId);
-        JobKey jobKey = ScheduleUtil.jobKey(byId);
+        deleteJob(byId);
+    }
+
+    public void deleteJob(JobInfo jobInfo) {
+        JobKey jobKey = ScheduleUtil.jobKey(jobInfo);
         try {
             if (scheduler.checkExists(jobKey)) {
                 scheduler.deleteJob(jobKey);
@@ -200,7 +210,13 @@ public class JobService {
 
     public JobInfo getJobInfoByJobKey(JobKey jobKey) {
         String name = jobKey.getName();
-        return jobInfoRepository.findFirstByName(name);
+        JobInfo jobInfo = jobInfoRepository.findFirstByName(name);
+        if (jobInfo == null) {
+            jobInfo = new JobInfo();
+            jobInfo.setName(jobKey.getName());
+            jobInfo.setGroupName(jobKey.getGroup());
+        }
+        return jobInfo;
     }
 
     public List<JobInfoVo> listScheduledJob() {
@@ -211,18 +227,44 @@ public class JobService {
                     .map(jobInfo -> {
                         JobInfoVo vo = new JobInfoVo(jobInfo);
                         Trigger.TriggerState triggerState = null;
+                        TriggerKey triggerKey = ScheduleUtil.triggerKey(jobInfo);
                         try {
-                            triggerState = scheduler.getTriggerState(ScheduleUtil.triggerKey(jobInfo));
+                            triggerState = scheduler.getTriggerState(triggerKey);
+                            JobState state = JobState.of(triggerState.ordinal());
+                            vo.setState(state);
+                            // 处理临时调度
+                            if (jobInfo.getId() == null) {
+                                vo.setRemark("临时调度");
+                            }
                         } catch (SchedulerException e) {
                             e.printStackTrace();
                         }
-                        JobState state = JobState.of(triggerState.ordinal());
-                        vo.setState(state);
+
                         return vo;
                     }).collect(Collectors.toList());
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
         return Collections.emptyList();
+    }
+
+    public void enableJob(Integer id) {
+        JobInfo jobInfo = exists(id);
+        if (jobInfo.getEnable()) {
+            return;
+        }
+        jobInfo.setEnable(Boolean.TRUE);
+        jobInfoRepository.save(jobInfo);
+        startJob(jobInfo);
+    }
+
+    public void disableJob(Integer id) {
+        JobInfo jobInfo = exists(id);
+        if (!jobInfo.getEnable()) {
+            return;
+        }
+        deleteJob(id);
+        jobInfo.setEnable(Boolean.FALSE);
+        jobInfoRepository.save(jobInfo);
     }
 }

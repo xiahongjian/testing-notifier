@@ -14,7 +14,7 @@ import java.util.List;
  * Created by xiahongjian on 2021/4/17.
  */
 @RestController
-@RequestMapping("/dicts")
+@RequestMapping("/api/dicts")
 public class DictController {
     @Setter(onMethod_ = {@Autowired})
     private DictService dictService;
