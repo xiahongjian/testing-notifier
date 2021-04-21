@@ -76,7 +76,7 @@ public class NotificationService {
         mimeMessageHelper.setFrom(from);
         mimeMessageHelper.setTo(mailTo);
         mimeMessageHelper.setSubject(subject);
-        mimeMessageHelper.setText(content);
+        mimeMessageHelper.setText(content, true);
         mailSender.send(mimeMessage);
     }
 
