@@ -1,18 +1,19 @@
 package tech.hongjian.testingnotifier.service;
 
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.hongjian.testingnotifier.entity.Announcement;
 import tech.hongjian.testingnotifier.entity.DictValue;
 
+import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,30 +39,45 @@ public class NotificationService {
 
     public static final String NOTIFICATION_SUBJECT = "普通话考试报名通知";
 
+    @SneakyThrows
     public void sendNotification() {
-        List<DictValue> dictValues = dictService.listEnableValueByKey(SysDictKeys.NOTIFY_TO);
-        if (dictValues.isEmpty()) {
+        String[] mailTo = getMailTo();
+        if (mailTo.length == 0) {
             log.error("未配置" + SysDictKeys.NOTIFY_TO + "字典，无法发送通知。");
             return;
         }
-        List<String> tos = dictValues.stream().map(DictValue::getValue).collect(Collectors.toList());
+
         List<Announcement> announcements = allNeedToSendNotification();
         if (announcements.isEmpty()) {
             return;
         }
-
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setFrom(from);
-        mail.setTo(tos.toArray(new String[0]));
-        mail.setSubject(NOTIFICATION_SUBJECT);
-        mail.setText(generateMailContent(announcements));
-        mailSender.send(mail);
+        sendMail(mailTo, NOTIFICATION_SUBJECT, generateMailContent(announcements));
 
         // 更新状态
         for (Announcement announcement : announcements) {
             announcement.setHasNotified(true);
             em.merge(announcement);
         }
+    }
+
+    public String[] getMailTo() {
+        List<DictValue> dictValues = dictService.listEnableValueByKey(SysDictKeys.NOTIFY_TO);
+        if (dictValues.isEmpty()) {
+            return new String[0];
+        }
+        List<String> tos = dictValues.stream().map(DictValue::getValue).collect(Collectors.toList());
+        return tos.toArray(new String[0]);
+    }
+
+    @SneakyThrows
+    public void sendMail(String[] mailTo, String subject, String content) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        mimeMessageHelper.setFrom(from);
+        mimeMessageHelper.setTo(mailTo);
+        mimeMessageHelper.setSubject(subject);
+        mimeMessageHelper.setText(content);
+        mailSender.send(mimeMessage);
     }
 
     private String generateMailContent(List<Announcement> announcements) {
