@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import tech.hongjian.testingnotifier.service.NotificationService;
+import tech.hongjian.testingnotifier.util.ScheduleUtil;
 
 /**
  * Created by xiahongjian on 2021/4/21.
@@ -54,7 +55,8 @@ public class MailNotifyJob implements Job {
                 "        <td>百度</td>\n" +
                 "    </tr>\n" +
                 "</table>";
-        String to = context.getMergedJobDataMap().getString("to");
+
+        String to = ScheduleUtil.getJobStringParam(context, "to");
         notificationService.sendMail(new String[]{to}, "测试邮件", htmlContent);
     }
 }

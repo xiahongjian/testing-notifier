@@ -6,6 +6,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
+import tech.hongjian.testingnotifier.util.ScheduleUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 public class PrintTimeJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
-        log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + ": " + jobDataMap.getString("param"));
+        String param = ScheduleUtil.getJobStringParam(jobExecutionContext, "param");
+        log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + ": " + param);
     }
 }

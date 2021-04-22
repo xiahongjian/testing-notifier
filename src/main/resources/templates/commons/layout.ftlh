@@ -24,8 +24,9 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li <#if tab=='schdule'>class="active"</#if>><a href="index">Schedules</a></li>
-                <li <#if tab=='jobs'>class="active"</#if>><a href="jobs">Jobs</a></li>
+                <li <#if tab=='schdule'>class="active"</#if>><a href="index">调度</a></li>
+                <li <#if tab=='jobs'>class="active"</#if>><a href="jobs">任务</a></li>
+                <li <#if tab=='logs'>class="active"</#if>><a href="logs">日志</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>

@@ -11,9 +11,11 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.hongjian.testingnotifier.entity.JobInfo;
+import tech.hongjian.testingnotifier.job.ScheduleJob;
 import tech.hongjian.testingnotifier.model.JobInfoVo;
 import tech.hongjian.testingnotifier.model.JobState;
 import tech.hongjian.testingnotifier.repository.JobInfoRepository;
+import tech.hongjian.testingnotifier.util.JSONUtil;
 import tech.hongjian.testingnotifier.util.ScheduleUtil;
 
 import java.util.*;
@@ -98,12 +100,7 @@ public class JobService {
             return;
         }
         try {
-            Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(jobInfo.getClassName());
-
-            JobDataMap jobDataMap = toJsonDataMap(jobInfo.getParams());
-            JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(ScheduleUtil.jobKey(jobInfo))
-                    .setJobData(jobDataMap)
-                    .build();
+            JobDetail jobDetail = ScheduleUtil.buildJob(jobInfo);
             String cron = jobInfo.getCron();
             if (StringUtils.isBlank(cron)) {
                 cron = dictService.getDictValueByKey(jobInfo.getTriggerType()).getValue();
@@ -114,27 +111,21 @@ public class JobService {
                     .withIdentity(ScheduleUtil.triggerKey(jobInfo))
                     .build();
             scheduler.scheduleJob(jobDetail, trigger);
-        } catch (ClassNotFoundException | SchedulerException e) {
+        } catch (SchedulerException e) {
             log.warn("创建调度失败，信息：{}", e.getMessage(), e);
         }
     }
 
     public void doJobRightNowOnce(JobInfo jobInfo) {
         try {
-            Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(jobInfo.getClassName());
-
-            JobDataMap jobDataMap = toJsonDataMap(jobInfo.getParams());
-            JobDetail jobDetail = JobBuilder.newJob(jobClass)
-                    .withIdentity(ScheduleUtil.jobKey(jobInfo))
-                    .setJobData(jobDataMap)
-                    .build();
+            JobDetail jobDetail = ScheduleUtil.buildJob(jobInfo);
             Trigger trigger = TriggerBuilder.newTrigger()
                     .withIdentity(ScheduleUtil.onceTriggerKey(jobInfo))
                     .startAt(new Date())
                     .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(3).withRepeatCount(0)) // 3秒后执行，不重复
                     .build();
             scheduler.scheduleJob(jobDetail, trigger);
-        } catch (ClassNotFoundException | SchedulerException e) {
+        } catch (SchedulerException e) {
             log.warn("创建调度失败，信息：{}", e.getMessage(), e);
         }
     }

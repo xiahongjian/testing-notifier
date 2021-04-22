@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tech.hongjian.testingnotifier.service.NotificationService;
 import tech.hongjian.testingnotifier.parser.AnnouncementParser;
+import tech.hongjian.testingnotifier.util.ScheduleUtil;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -52,9 +53,9 @@ public class AnnouncementSpiderJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         int interval = 5;
-        JobDataMap mergedJobDataMap = jobExecutionContext.getMergedJobDataMap();
-        if (mergedJobDataMap.containsKey(VAR_INTERVAL)) {
-            interval = mergedJobDataMap.getInt(VAR_INTERVAL);
+        Object param = ScheduleUtil.getJobParam(jobExecutionContext, VAR_INTERVAL);
+        if (param != null) {
+            interval = (Integer) param;
         }
         doParse(interval);
     }

@@ -57,4 +57,11 @@ public class IndexController {
 //        model.addAttribute("jobs", jobService.listJobInfo());
         return "job";
     }
+
+    @GetMapping("/logs")
+    public String logs(Model model) {
+        model.addAttribute("triggerMap", toJson(dictService.getEnableValueMap(SysDictKeys.TRIGGER_TYPE)));
+//        model.addAttribute("jobs", jobService.listJobInfo());
+        return "log";
+    }
 }
