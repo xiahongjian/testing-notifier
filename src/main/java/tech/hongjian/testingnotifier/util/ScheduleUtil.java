@@ -23,6 +23,10 @@ public class ScheduleUtil {
         return JobKey.jobKey(jobInfo.getName(), jobInfo.getGroupName());
     }
 
+    public static JobKey jobKey(JobInfo jobInfo, boolean onlyOnce) {
+        return JobKey.jobKey(jobInfo.getName(), TRIGGER_GROUP_ONCE);
+    }
+
     public static TriggerKey triggerKey(JobInfo jobInfo) {
         return TriggerKey.triggerKey(jobInfo.getName(), jobInfo.getGroupName());
     }
@@ -74,7 +78,12 @@ public class ScheduleUtil {
     }
 
     public static JobDetail buildJob(JobInfo jobInfo) {
-        JobDetail jobDetail = JobBuilder.newJob(ScheduleJob.class).withIdentity(ScheduleUtil.jobKey(jobInfo))
+        return buildJob(jobInfo, false);
+    }
+
+    public static JobDetail buildJob(JobInfo jobInfo, boolean onlyOnce) {
+        JobKey jobKey = onlyOnce ? jobKey(jobInfo, true) : jobKey(jobInfo);
+        JobDetail jobDetail = JobBuilder.newJob(ScheduleJob.class).withIdentity(jobKey)
                 .build();
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
         ScheduleUtil.setJobClass(jobDataMap, jobInfo.getClassName());

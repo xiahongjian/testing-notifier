@@ -118,7 +118,7 @@ public class JobService {
 
     public void doJobRightNowOnce(JobInfo jobInfo) {
         try {
-            JobDetail jobDetail = ScheduleUtil.buildJob(jobInfo);
+            JobDetail jobDetail = ScheduleUtil.buildJob(jobInfo, true);
             Trigger trigger = TriggerBuilder.newTrigger()
                     .withIdentity(ScheduleUtil.onceTriggerKey(jobInfo))
                     .startAt(new Date())
