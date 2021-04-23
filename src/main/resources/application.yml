@@ -24,5 +24,5 @@ spring:
     request-context-attribute: request
 logging:
   file:
-    path: ./logs
-    name: testing-notifier.log
+    name: ./logs/testing-notifier.log
+
