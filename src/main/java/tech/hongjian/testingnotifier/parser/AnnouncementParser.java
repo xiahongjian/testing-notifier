@@ -43,10 +43,7 @@ public class AnnouncementParser extends BaseParser{
                 if (startId != null && startId >= announcementId) {
                     break;
                 }
-                if (!needToParse(title)) {
-                    continue;
-                }
-                parseAnnouncement(link, announcementId, title, interval);
+                parseAnnouncement(link, announcementId, interval);
             }
 
         } catch (IOException e) {
@@ -55,7 +52,7 @@ public class AnnouncementParser extends BaseParser{
 
     }
 
-    private void parseAnnouncement(String href, Integer id, String title, int delay) throws IOException {
+    private void parseAnnouncement(String href, Integer id, int delay) throws IOException {
         try {
             // 停3秒，控制访问频率
             Thread.sleep(delay * 1000);
@@ -65,7 +62,15 @@ public class AnnouncementParser extends BaseParser{
         Announcement announcement = new Announcement();
 
         String url = composeUrl(href);
-        Element contentEle = queryElement(url, "#read_content");
+        Document document = getDocument(url);
+        String title = document.select("#read_title").first().text();
+        String info = document.select("#read_affix").first().text();
+
+        if (!needToParse(title, info)) {
+            return;
+        }
+
+        Element contentEle = document.select("#read_content").first();
         String announcementContent = contentEle.text();
 
         announcement.setAnnouncementId(id);
@@ -92,8 +97,8 @@ public class AnnouncementParser extends BaseParser{
         em.persist(announcement);
     }
 
-    private boolean needToParse(String title) {
-        return title.matches(".*普通话水平测试.*");
+    private boolean needToParse(String title, String authorInfo) {
+        return title.matches(".*普通话水平测试.*") || authorInfo.contains("上传：安徽省普通话培训测试中心(管理员)");
     }
 
     private String composeUrl(String href) {
